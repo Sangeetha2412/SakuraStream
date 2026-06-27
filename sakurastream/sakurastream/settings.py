@@ -1,3 +1,4 @@
+import dj_database_url
 import os
 from pathlib import Path
 from decouple import config
@@ -8,7 +9,7 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-sakurastream-change-i
 
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,0.0.0.0').split(',')
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,0.0.0.0,sakurastream.onrender.com').split(',')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -65,14 +66,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'sakurastream.wsgi.application'
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME', default='sakurastream'),
-        'USER': config('DB_USER', default='sakura'),
-        'PASSWORD': config('DB_PASSWORD', default='sakura123'),
-        'HOST': config('DB_HOST', default='db'),
-        'PORT': config('DB_PORT', default='5432'),
-    }
+    "default": dj_database_url.config(
+        default=config("DATABASE_URL")
+    )
 }
 
 AUTH_USER_MODEL = 'users.User'
