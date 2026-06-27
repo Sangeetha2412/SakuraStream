@@ -1,0 +1,10 @@
+{% extends 'base.html' %}{% block title %}{{ genre.name }} Anime — SakuraStream{% endblock %}{% block content %}
+<div class="max-w-[1400px] mx-auto px-4 py-8"><h1 class="text-3xl font-black text-white mb-2">{{ genre.icon|default:"🎭" }} {{ genre.name }}</h1>{% if genre.description %}<p class="text-white/50 mb-6">{{ genre.description }}</p>{% endif %}
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-4">
+{% for item in anime %}
+<a href="{{ item.get_absolute_url }}" class="anime-card group" style="height:260px"><div class="relative w-full h-full rounded-xl overflow-hidden"><img src="{{ item.display_poster }}" alt="{{ item.title }}" class="w-full h-full object-cover" loading="lazy"/><div class="card-overlay"></div>{% if item.score %}<div class="absolute top-2 right-2 z-20"><span class="score-badge">⭐ {{ item.score_display }}</span></div>{% endif %}<div class="absolute bottom-0 left-0 right-0 z-20 p-3"><p class="text-white font-semibold text-xs line-clamp-2">{{ item.title_english|default:item.title }}</p></div></div></a>
+{% empty %}<div class="col-span-full glass-card rounded-2xl p-12 text-center"><p class="text-white/50">No anime found in this genre.</p></div>{% endfor %}
+</div>
+{% if anime.has_other_pages %}
+<div class="flex justify-center gap-2 mt-8">{% if anime.has_previous %}<a href="?page={{ anime.previous_page_number }}" class="btn-ghost text-sm py-2 px-4">← Prev</a>{% endif %}<span class="btn-sakura text-sm py-2 px-4">{{ anime.number }}/{{ anime.paginator.num_pages }}</span>{% if anime.has_next %}<a href="?page={{ anime.next_page_number }}" class="btn-ghost text-sm py-2 px-4">Next →</a>{% endif %}</div>{% endif %}
+</div>{% endblock %}

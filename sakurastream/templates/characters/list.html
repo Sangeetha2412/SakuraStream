@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Characters — SakuraStream{% endblock %}
+{% block content %}
+<div class="max-w-[1400px] mx-auto px-4 py-8">
+  <h1 class="text-3xl font-black text-white mb-6">🎭 Characters</h1>
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+    {% for character in characters %}
+    <a href="{{ character.get_absolute_url }}" class="glass-card glass-card-hover rounded-xl overflow-hidden group text-center">
+      <div class="aspect-square overflow-hidden">
+        <img src="{{ character.display_image }}" alt="{{ character.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform" loading="lazy" />
+      </div>
+      <div class="p-2"><p class="text-xs font-medium text-white line-clamp-1">{{ character.name }}</p><p class="text-xs text-white/30">♥ {{ character.favorites }}</p></div>
+    </a>
+    {% empty %}
+    <div class="col-span-full glass-card rounded-2xl p-12 text-center"><p class="text-5xl mb-3">🎭</p><p class="text-white/50">No characters yet. Data fetches automatically.</p></div>
+    {% endfor %}
+  </div>
+  {% if characters.has_other_pages %}
+  <div class="flex justify-center gap-2 mt-8">
+    {% if characters.has_previous %}<a href="?page={{ characters.previous_page_number }}" class="btn-ghost text-sm py-2 px-4">← Prev</a>{% endif %}
+    <span class="btn-sakura text-sm py-2 px-4">{{ characters.number }} / {{ characters.paginator.num_pages }}</span>
+    {% if characters.has_next %}<a href="?page={{ characters.next_page_number }}" class="btn-ghost text-sm py-2 px-4">Next →</a>{% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Upcoming Anime — SakuraStream{% endblock %}
+{% block content %}
+<div class="max-w-[1400px] mx-auto px-4 py-8">
+  <h1 class="text-3xl font-black text-white mb-2">🚀 Upcoming Anime</h1>
+  <p class="text-white/50 mb-6">Highly anticipated upcoming releases</p>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+    {% for item in anime %}
+    <a href="{{ item.get_absolute_url }}" class="glass-card glass-card-hover rounded-xl overflow-hidden group">
+      <div class="relative h-44 overflow-hidden">
+        <img src="{{ item.display_banner }}" alt="{{ item.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+        <div class="absolute inset-0 bg-gradient-to-t from-midnight to-transparent"></div>
+        <div class="absolute top-2 right-2"><span class="status-upcoming px-2 py-0.5 rounded-full text-xs font-medium">Upcoming</span></div>
+      </div>
+      <div class="p-4 flex gap-3">
+        <img src="{{ item.display_poster }}" class="w-12 h-16 object-cover rounded-lg flex-shrink-0" alt=""/>
+        <div><p class="font-bold text-white text-sm line-clamp-2">{{ item.title }}</p>
+        <p class="text-white/40 text-xs mt-1">{{ item.season|capfirst }} {{ item.season_year }}</p>
+        <div class="flex flex-wrap gap-1 mt-2">{% for g in item.genres.all|slice:":2" %}<span class="genre-pill">{{ g.name }}</span>{% endfor %}</div></div>
+      </div>
+    </a>
+    {% empty %}
+    <div class="col-span-full glass-card rounded-2xl p-12 text-center"><p class="text-5xl mb-3">🚀</p><p class="text-white/50">Upcoming anime fetched automatically every 6 hours.</p></div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block title %}{{ profile_user.username }} — SakuraStream{% endblock %}
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-8">
+  <!-- Profile Banner -->
+  <div class="glass-card rounded-2xl overflow-hidden mb-6">
+    <div class="h-40 bg-gradient-to-r from-sakura/30 via-neon/20 to-lavender/30"></div>
+    <div class="px-6 pb-6 -mt-12">
+      <div class="flex items-end gap-4 flex-wrap">
+        <img src="{{ profile_user.display_avatar }}" class="w-24 h-24 rounded-2xl object-cover ring-4 ring-midnight" alt="{{ profile_user.username }}" />
+        <div class="pb-2 flex-1">
+          <h1 class="text-2xl font-black text-white">{{ profile_user.display_name|default:profile_user.username }}</h1>
+          <p class="text-white/50 text-sm">@{{ profile_user.username }}</p>
+          <div class="flex items-center gap-3 mt-2 flex-wrap">
+            <span class="genre-pill">Lv.{{ profile_user.level }} {{ profile_user.level_title }}</span>
+            <span class="text-white/40 text-xs">{{ profile_user.xp }} XP</span>
+            <span class="text-white/40 text-xs">Joined {{ profile_user.date_joined|date:"M Y" }}</span>
+          </div>
+        </div>
+        {% if user == profile_user %}
+        <a href="/users/profile/edit/" class="btn-ghost text-sm py-2 px-4">Edit Profile</a>
+        {% endif %}
+      </div>
+      {% if profile_user.bio %}
+      <p class="text-white/60 text-sm mt-4 max-w-xl">{{ profile_user.bio }}</p>
+      {% endif %}
+      <!-- XP Progress -->
+      <div class="mt-4 max-w-sm">
+        <div class="flex justify-between text-xs text-white/40 mb-1">
+          <span>Level {{ profile_user.level }}</span><span>{{ profile_user.xp_progress_percent }}%</span>
+        </div>
+        <div class="h-2 bg-white/10 rounded-full"><div class="progress-bar h-full rounded-full" style="width:{{ profile_user.xp_progress_percent }}%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
+    
+    <div class="glass-card rounded-xl p-4 text-center"><p class="gradient-text font-black text-2xl">{{ stats.completed }}</p><p class="text-white/40 text-xs mt-0.5">Completed</p></div>
+    <div class="glass-card rounded-xl p-4 text-center"><p class="gradient-text font-black text-2xl">{{ stats.watching }}</p><p class="text-white/40 text-xs mt-0.5">Watching</p></div>
+    <div class="glass-card rounded-xl p-4 text-center"><p class="gradient-text font-black text-2xl">{{ stats.plan_to_watch }}</p><p class="text-white/40 text-xs mt-0.5">Planned</p></div>
+    <div class="glass-card rounded-xl p-4 text-center"><p class="gradient-text font-black text-2xl">{{ stats.dropped }}</p><p class="text-white/40 text-xs mt-0.5">Dropped</p></div>
+    <div class="glass-card rounded-xl p-4 text-center"><p class="gradient-text font-black text-2xl">{{ stats.reviews }}</p><p class="text-white/40 text-xs mt-0.5">Reviews</p></div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Watchlist -->
+    <div class="lg:col-span-2">
+      <h2 class="section-title text-white mb-4">📺 Watchlist</h2>
+      <div class="space-y-3">
+        {% for entry in watchlist %}
+        <a href="{{ entry.anime.get_absolute_url }}" class="glass-card glass-card-hover rounded-xl p-3 flex items-center gap-3">
+          <img src="{{ entry.anime.display_poster }}" class="w-10 h-14 object-cover rounded-lg" alt="" />
+          <div class="flex-1 min-w-0">
+            <p class="text-white font-medium text-sm truncate">{{ entry.anime.title }}</p>
+            <div class="flex items-center gap-2 mt-0.5">
+              <span class="text-xs {% if entry.status == 'watching' %}text-green-400{% elif entry.status == 'completed' %}text-purple-400{% elif entry.status == 'dropped' %}text-red-400{% else %}text-white/40{% endif %}">{{ entry.get_status_display }}</span>
+              {% if entry.anime.episodes %}<span class="text-white/30 text-xs">{{ entry.episodes_watched }}/{{ entry.anime.episodes }}</span>{% endif %}
+            </div>
+            {% if entry.anime.episodes %}
+            <div class="h-1 bg-white/10 rounded-full mt-1.5"><div class="progress-bar h-full rounded-full" style="width:{{ entry.progress_percent }}%"></div></div>
+            {% endif %}
+          </div>
+          {% if entry.score %}<span class="score-badge text-xs">{{ entry.score }}</span>{% endif %}
+        </a>
+        {% empty %}
+        <div class="glass-card rounded-xl p-8 text-center"><p class="text-white/40">No anime in watchlist yet</p></div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Achievements + Reviews -->
+    <div class="space-y-6">
+      {% if achievements %}
+      <div>
+        <h2 class="section-title text-white mb-4">🏆 Achievements</h2>
+        <div class="grid grid-cols-3 gap-2">
+          {% for achievement in achievements|slice:":9" %}
+          <div class="glass-card rounded-xl p-2 text-center" title="{{ achievement.name }}">
+            <div class="text-2xl mb-1">{{ achievement.icon }}</div>
+            <p class="text-white/60 text-xs truncate">{{ achievement.name }}</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <div>
+        <h2 class="section-title text-white mb-4">💬 Reviews</h2>
+        <div class="space-y-3">
+          {% for review in reviews %}
+          <a href="{{ review.anime.get_absolute_url }}" class="glass-card glass-card-hover rounded-xl p-3 block">
+            <div class="flex items-center gap-2 mb-1">
+              <img src="{{ review.anime.display_poster }}" class="w-7 h-10 object-cover rounded" alt="" />
+              <p class="text-white text-xs font-medium truncate">{{ review.anime.title }}</p>
+              <span class="score-badge ml-auto text-xs">{{ review.score }}</span>
+            </div>
+            <p class="text-white/50 text-xs line-clamp-2">{{ review.content }}</p>
+          </a>
+          {% empty %}
+          <p class="text-white/40 text-sm glass-card rounded-xl p-4 text-center">No reviews yet</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

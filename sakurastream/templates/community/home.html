@@ -1,0 +1,19 @@
+{% extends 'base.html' %}{% block title %}Community — SakuraStream{% endblock %}{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-8"><h1 class="text-3xl font-black text-white mb-6">💬 Community</h1>
+<div class="space-y-4">
+{% for review in reviews %}
+<div class="glass-card glass-card-hover rounded-xl p-5">
+  <div class="flex items-center gap-3 mb-3">
+    <img src="{{ review.user.display_avatar }}" class="w-9 h-9 rounded-full object-cover ring-1 ring-sakura/30" alt=""/>
+    <div><p class="font-medium text-sm text-white">{{ review.user.username }}</p><p class="text-xs text-white/40">{{ review.created_at|timesince }} ago</p></div>
+    <span class="score-badge ml-auto">{{ review.score }}/10</span>
+  </div>
+  <a href="{{ review.anime.get_absolute_url }}" class="flex items-center gap-2 mb-3">
+    <img src="{{ review.anime.display_poster }}" class="w-8 h-12 object-cover rounded" alt=""/>
+    <span class="text-xs text-sakura font-medium hover:underline">{{ review.anime.title }}</span>
+  </a>
+  <h4 class="font-semibold text-sm text-white mb-1">{{ review.title }}</h4>
+  <p class="text-white/50 text-xs leading-relaxed line-clamp-3">{{ review.content }}</p>
+</div>
+{% empty %}<div class="glass-card rounded-2xl p-12 text-center"><p class="text-5xl mb-3">💬</p><p class="text-white/50">No reviews yet. Be the first!</p><a href="/anime/" class="btn-sakura inline-block mt-4">Browse Anime</a></div>{% endfor %}
+</div></div>{% endblock %}

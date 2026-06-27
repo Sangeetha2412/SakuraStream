@@ -1,0 +1,43 @@
+<a href="{{ anime.get_absolute_url }}" class="anime-card flex-shrink-0 w-[160px] sm:w-[180px] group" style="height: 260px;">
+    <!-- Poster -->
+    <div class="relative w-full h-full rounded-xl overflow-hidden">
+        <img
+            src="{{ anime.display_poster }}"
+            alt="{{ anime.title }}"
+            class="w-full h-full object-cover"
+            loading="lazy"
+            onerror="this.src='/static/images/no-poster.jpg'"
+        />
+        <div class="card-overlay"></div>
+
+        <!-- Score badge top-right -->
+        {% if anime.score %}
+        <div class="absolute top-2 right-2 z-20">
+            <span class="score-badge">⭐ {{ anime.score_display }}</span>
+        </div>
+        {% endif %}
+
+        <!-- Status badge top-left -->
+        <div class="absolute top-2 left-2 z-20">
+            <span class="px-1.5 py-0.5 rounded-md text-xs font-medium {% if anime.status == 'airing' %}status-airing{% elif anime.status == 'upcoming' %}status-upcoming{% else %}status-finished{% endif %}">
+                {% if anime.status == 'airing' %}● Airing{% elif anime.status == 'upcoming' %}Upcoming{% else %}Fin.{% endif %}
+            </span>
+        </div>
+
+        <!-- Bottom info overlay -->
+        <div class="absolute bottom-0 left-0 right-0 z-20 p-3">
+            <p class="text-white font-semibold text-xs leading-tight line-clamp-2 mb-1">{{ anime.title_english|default:anime.title }}</p>
+            <div class="flex items-center gap-1 flex-wrap">
+                {% if anime.episodes %}<span class="text-white/50 text-xs">{{ anime.episodes }} eps</span>{% endif %}
+                {% if anime.anime_type %}<span class="text-white/30 text-xs">• {{ anime.get_anime_type_display }}</span>{% endif %}
+            </div>
+        </div>
+
+        <!-- Hover play button -->
+        <div class="absolute inset-0 flex items-center justify-center z-30 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div class="w-12 h-12 bg-sakura/90 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg">
+                <svg class="w-5 h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>
+            </div>
+        </div>
+    </div>
+</a>

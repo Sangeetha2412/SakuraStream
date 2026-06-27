@@ -1,0 +1,310 @@
+{% extends 'base.html' %}
+{% block title %}SakuraStream — Where Every Petal Tells an Anime Story{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <!-- Animated gradient bg -->
+    <div class="absolute inset-0 z-0">
+        <div class="absolute inset-0 bg-gradient-to-br from-[#0B0B14] via-[#14082A] to-[#0B0B14]"></div>
+        <!-- Radial glows -->
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-sakura/10 rounded-full blur-[120px] animate-pulse"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-neon/10 rounded-full blur-[100px] animate-pulse" style="animation-delay:1s"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-lavender/5 rounded-full blur-[150px]"></div>
+    </div>
+
+    <!-- Hero content -->
+    <div class="relative z-10 text-center px-4 max-w-5xl mx-auto">
+        <!-- Badge -->
+        <div class="inline-flex items-center gap-2 glass-card rounded-full px-4 py-2 mb-8 border border-sakura/20">
+            <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+            <span class="text-sm text-white/60">{{ total_anime|default:"1000" }}+ Anime in Database</span>
+        </div>
+
+        <!-- Logo -->
+        <div class="flex items-center justify-center gap-4 mb-6">
+            <div class="text-6xl animate-float">🌸</div>
+        </div>
+
+        <!-- Title -->
+        <h1 class="text-5xl sm:text-7xl md:text-8xl font-black leading-none mb-4 tracking-tight">
+            <span class="gradient-text neon-glow">SakuraStream</span>
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="text-xl sm:text-2xl text-white/60 mb-4 font-light">
+            Discover, Explore and Experience the World of Anime
+        </p>
+        <p class="text-sm text-white/30 font-jp mb-10 tracking-wider">
+            全てのアニメを一つの場所に
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="flex flex-wrap items-center justify-center gap-4">
+            <a href="/anime/" class="btn-sakura text-base px-8 py-3 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Explore Anime
+            </a>
+            <a href="/trending/" class="btn-ghost text-base px-8 py-3 flex items-center gap-2">
+                <svg class="w-5 h-5 text-sakura" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                Trending Now
+            </a>
+        </div>
+
+        <!-- Stats strip -->
+        <div class="flex flex-wrap justify-center gap-8 mt-14">
+            
+            <div class="text-center">
+                <p class="gradient-text font-black text-2xl">{{ total_anime|default:"1000+" }}</p>
+                <p class="text-white/40 text-xs mt-0.5">Anime Series</p>
+            </div>
+            <div class="w-px h-8 bg-white/10 self-center"></div>
+            <div class="text-center">
+                <p class="gradient-text font-black text-2xl">50K+</p>
+                <p class="text-white/40 text-xs mt-0.5">Characters</p>
+            </div>
+            <div class="w-px h-8 bg-white/10 self-center"></div>
+            <div class="text-center">
+                <p class="gradient-text font-black text-2xl">500K+</p>
+                <p class="text-white/40 text-xs mt-0.5">Active Users</p>
+            </div>
+            <div class="w-px h-8 bg-white/10 self-center"></div>
+            <div class="text-center">
+                <p class="gradient-text font-black text-2xl">1M+</p>
+                <p class="text-white/40 text-xs mt-0.5">Reviews</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-bounce">
+        <svg class="w-6 h-6 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+    </div>
+</section>
+
+<!-- Featured Anime -->
+{% if featured %}
+<section class="relative z-10 -mt-16 mx-4 lg:mx-8 mb-16">
+    <div class="relative rounded-2xl overflow-hidden" style="height: 400px;">
+        <img src="{{ featured.display_banner }}" alt="{{ featured.title }}" class="absolute inset-0 w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-gradient-to-r from-midnight via-midnight/80 to-transparent"></div>
+        <div class="absolute inset-0 flex items-end p-8 md:p-12">
+            <div class="flex items-end gap-6 max-w-2xl">
+                <img src="{{ featured.display_poster }}" alt="{{ featured.title }}" class="hidden sm:block w-32 h-48 object-cover rounded-xl shadow-2xl ring-2 ring-sakura/30 flex-shrink-0" />
+                <div>
+                    <div class="flex gap-2 mb-3">
+                        <span class="score-badge">⭐ {{ featured.score_display }}</span>
+                        <span class="px-2 py-0.5 rounded-full text-xs font-medium {% if featured.status == 'airing' %}status-airing{% elif featured.status == 'upcoming' %}status-upcoming{% else %}status-finished{% endif %}">
+                            {{ featured.get_status_display }}
+                        </span>
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-black text-white mb-2 leading-tight">{{ featured.title }}</h2>
+                    <p class="text-white/60 text-sm leading-relaxed line-clamp-2 mb-4 max-w-lg">{{ featured.synopsis|truncatewords:25 }}</p>
+                    <div class="flex gap-3 flex-wrap mb-4">
+                        {% for genre in featured.genres.all|slice:":3" %}
+                        <span class="genre-pill">{{ genre.name }}</span>
+                        {% endfor %}
+                    </div>
+                    <a href="{{ featured.get_absolute_url }}" class="btn-sakura inline-flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="absolute top-4 right-4">
+            <span class="glass-card px-3 py-1 rounded-full text-xs font-semibold text-sakura border border-sakura/30">✨ Editor's Pick</span>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<div class="max-w-[1400px] mx-auto px-4 sm:px-6 space-y-16 pb-16">
+
+    <!-- Trending Anime -->
+    {% if trending %}
+    <section>
+        {% include 'partials/section_header.html' with title="🔥 Trending Now" subtitle="Most popular anime this week" link="/trending/" link_text="View All" %}
+        <div class="scroll-row flex gap-4 py-2">
+            {% for anime in trending %}
+            {% include 'partials/anime_card.html' %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Seasonal Anime -->
+    {% if seasonal %}
+    <section>
+        {% include 'partials/section_header.html' with title="🌸 This Season" subtitle=current_season|capfirst|add:" "|add:current_year|stringformat:"s" link="/seasonal/" link_text="Full Season" %}
+        <div class="scroll-row flex gap-4 py-2">
+            {% for anime in seasonal %}
+            {% include 'partials/anime_card.html' %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Top Rated -->
+    {% if top_rated %}
+    <section>
+        {% include 'partials/section_header.html' with title="⭐ Top Rated" subtitle="Highest scored anime of all time" link="/anime/?order_by=-score" link_text="View All" %}
+        <div class="scroll-row flex gap-4 py-2">
+            {% for anime in top_rated %}
+            {% include 'partials/anime_card.html' %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Currently Airing -->
+    {% if latest %}
+    <section>
+        {% include 'partials/section_header.html' with title="📺 Currently Airing" subtitle="Episodes airing right now" link="/anime/?status=airing" link_text="View All" %}
+        <div class="scroll-row flex gap-4 py-2">
+            {% for anime in latest %}
+            {% include 'partials/anime_card.html' %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Most Popular -->
+    {% if popular %}
+    <section>
+        {% include 'partials/section_header.html' with title="👑 Most Popular" subtitle="Loved by millions of fans" link="/anime/?order_by=-members" link_text="View All" %}
+        <div class="scroll-row flex gap-4 py-2">
+            {% for anime in popular %}
+            {% include 'partials/anime_card.html' %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Genre Explorer -->
+    {% if top_genres %}
+    <section>
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h2 class="section-title text-white">🎭 Browse by Genre</h2>
+                <p class="text-white/40 text-sm mt-1">Find anime by your favorite genres</p>
+            </div>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            {% for genre in top_genres %}
+            <a href="/genre/{{ genre.slug }}/" class="glass-card glass-card-hover rounded-xl p-4 text-center group">
+                <div class="text-3xl mb-2">{{ genre.icon|default:"🎌" }}</div>
+                <p class="text-sm font-medium text-white group-hover:text-sakura transition-colors">{{ genre.name }}</p>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Upcoming Anime -->
+    {% if upcoming %}
+    <section>
+        {% include 'partials/section_header.html' with title="🚀 Coming Soon" subtitle="Highly anticipated upcoming releases" link="/upcoming/" link_text="View All" %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {% for anime in upcoming %}
+            <a href="{{ anime.get_absolute_url }}" class="glass-card glass-card-hover rounded-xl overflow-hidden flex items-start gap-4 p-4">
+                <img src="{{ anime.display_poster }}" alt="{{ anime.title }}" class="w-14 h-20 object-cover rounded-lg flex-shrink-0" />
+                <div class="min-w-0">
+                    <p class="font-semibold text-sm text-white line-clamp-2 mb-1">{{ anime.title }}</p>
+                    <p class="text-xs text-white/40 mb-2">{{ anime.season|capfirst }} {{ anime.season_year }}</p>
+                    <span class="status-upcoming px-2 py-0.5 rounded-full text-xs font-medium">Upcoming</span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Editor Picks -->
+    {% if editor_picks %}
+    <section>
+        {% include 'partials/section_header.html' with title="✨ Editor's Picks" subtitle="Curated selections from our team" link="/anime/" link_text="Browse All" %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for anime in editor_picks %}
+            <a href="{{ anime.get_absolute_url }}" class="glass-card glass-card-hover rounded-2xl overflow-hidden group">
+                <div class="relative h-48 overflow-hidden">
+                    <img src="{{ anime.display_banner }}" alt="{{ anime.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-midnight to-transparent"></div>
+                    <div class="absolute bottom-4 left-4 right-4">
+                        <div class="flex gap-2 mb-1 flex-wrap">
+                            {% for genre in anime.genres.all|slice:":2" %}<span class="genre-pill">{{ genre.name }}</span>{% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-bold text-white mb-1 group-hover:text-sakura transition-colors">{{ anime.title }}</h3>
+                    <div class="flex items-center justify-between">
+                        <p class="text-white/50 text-xs">{{ anime.episodes }} eps • {{ anime.get_anime_type_display }}</p>
+                        {% if anime.score %}<span class="score-badge">⭐ {{ anime.score_display }}</span>{% endif %}
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Collections -->
+    {% if collections %}
+    <section>
+        {% include 'partials/section_header.html' with title="📚 Collections" subtitle="Curated anime collections" link="/anime/" link_text="Browse All" %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {% for col in collections %}
+            <a href="{{ col.get_absolute_url }}" class="glass-card glass-card-hover rounded-xl overflow-hidden group">
+                <div class="relative h-32 bg-gradient-to-br from-sakura/20 to-neon/20 flex items-center justify-center">
+                    <span class="text-4xl">📚</span>
+                    <div class="absolute inset-0 bg-gradient-to-t from-midnight/80 to-transparent"></div>
+                    <div class="absolute bottom-3 left-3">
+                        <p class="text-white font-bold text-sm">{{ col.name }}</p>
+                        <p class="text-white/50 text-xs">{{ col.anime.count }} anime</p>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Recent Reviews -->
+    {% if recent_reviews %}
+    <section>
+        {% include 'partials/section_header.html' with title="💬 Community Reviews" subtitle="What fans are saying" link="/community/" link_text="More Reviews" %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for review in recent_reviews %}
+            <div class="glass-card rounded-xl p-5 glass-card-hover">
+                <div class="flex items-center gap-3 mb-3">
+                    <img src="{{ review.user.display_avatar }}" class="w-9 h-9 rounded-full object-cover ring-1 ring-sakura/30" alt="{{ review.user.username }}" />
+                    <div>
+                        <p class="font-medium text-sm text-white">{{ review.user.username }}</p>
+                        <p class="text-xs text-white/40">{{ review.created_at|timesince }} ago</p>
+                    </div>
+                    <div class="ml-auto">
+                        <span class="score-badge">{{ review.score }}/10</span>
+                    </div>
+                </div>
+                <a href="{{ review.anime.get_absolute_url }}" class="flex items-center gap-2 mb-3">
+                    <img src="{{ review.anime.display_poster }}" class="w-8 h-12 object-cover rounded" alt="" />
+                    <span class="text-xs text-sakura font-medium hover:underline line-clamp-2">{{ review.anime.title }}</span>
+                </a>
+                <h4 class="font-semibold text-sm text-white mb-2">{{ review.title }}</h4>
+                <p class="text-white/50 text-xs leading-relaxed line-clamp-3">{{ review.content }}</p>
+                <div class="flex items-center gap-2 mt-3">
+                    {% if review.is_recommended %}
+                    <span class="text-green-400 text-xs flex items-center gap-1"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"/></svg> Recommended</span>
+                    {% endif %}
+                    <span class="text-white/30 text-xs ml-auto">❤ {{ review.like_count }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+</div>
+{% endblock %}

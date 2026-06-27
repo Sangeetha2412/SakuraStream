@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}My Watchlist — SakuraStream{% endblock %}
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-8">
+  <h1 class="text-3xl font-black text-white mb-6">📺 My Watchlist</h1>
+  <!-- Status tabs -->
+  <div class="flex gap-2 flex-wrap mb-6">
+    
+    <a href="?status=all" class="px-4 py-2 rounded-full text-sm font-medium {% if status == 'all' %}btn-sakura{% else %}btn-ghost{% endif %}">All ({{ counts.all }})</a>
+    <a href="?status=watching" class="px-4 py-2 rounded-full text-sm font-medium {% if status == 'watching' %}btn-sakura{% else %}btn-ghost{% endif %}">Watching ({{ counts.watching }})</a>
+    <a href="?status=completed" class="px-4 py-2 rounded-full text-sm font-medium {% if status == 'completed' %}btn-sakura{% else %}btn-ghost{% endif %}">Completed ({{ counts.completed }})</a>
+    <a href="?status=plan_to_watch" class="px-4 py-2 rounded-full text-sm font-medium {% if status == 'plan_to_watch' %}btn-sakura{% else %}btn-ghost{% endif %}">Planned ({{ counts.plan_to_watch }})</a>
+    <a href="?status=dropped" class="px-4 py-2 rounded-full text-sm font-medium {% if status == 'dropped' %}btn-sakura{% else %}btn-ghost{% endif %}">Dropped ({{ counts.dropped }})</a>
+  </div>
+  <!-- Entries -->
+  <div class="space-y-3">
+    {% for entry in entries %}
+    <div class="glass-card glass-card-hover rounded-xl p-4 flex items-center gap-4">
+      <a href="{{ entry.anime.get_absolute_url }}"><img src="{{ entry.anime.display_poster }}" class="w-12 h-16 object-cover rounded-lg" alt="{{ entry.anime.title }}" /></a>
+      <div class="flex-1 min-w-0">
+        <a href="{{ entry.anime.get_absolute_url }}" class="text-white font-semibold hover:text-sakura transition-colors">{{ entry.anime.title }}</a>
+        <div class="flex items-center gap-3 mt-0.5 flex-wrap">
+          <span class="text-xs {% if entry.status == 'watching' %}text-green-400{% elif entry.status == 'completed' %}text-purple-400{% elif entry.status == 'dropped' %}text-red-400{% else %}text-white/40{% endif %}">{{ entry.get_status_display }}</span>
+          {% if entry.anime.episodes %}<span class="text-white/40 text-xs">Ep {{ entry.episodes_watched }}/{{ entry.anime.episodes|default:"?" }}</span>{% endif %}
+          {% if entry.score %}<span class="score-badge">{{ entry.score }}/10</span>{% endif %}
+        </div>
+        {% if entry.anime.episodes %}
+        <div class="h-1.5 bg-white/10 rounded-full mt-2 max-w-xs"><div class="progress-bar h-full rounded-full" style="width:{{ entry.progress_percent }}%"></div></div>
+        {% endif %}
+      </div>
+      <div class="flex flex-col gap-1 items-end text-xs text-white/30">
+        <span>{{ entry.updated_at|timesince }} ago</span>
+        <div class="flex gap-2 mt-1">
+          {% for genre in entry.anime.genres.all|slice:":2" %}<span class="genre-pill">{{ genre.name }}</span>{% endfor %}
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="glass-card rounded-2xl p-16 text-center">
+      <p class="text-6xl mb-4">📭</p>
+      <h3 class="text-xl font-bold text-white mb-2">No anime here</h3>
+      <p class="text-white/50 mb-5">Start adding anime to your watchlist</p>
+      <a href="/anime/" class="btn-sakura inline-block">Browse Anime</a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

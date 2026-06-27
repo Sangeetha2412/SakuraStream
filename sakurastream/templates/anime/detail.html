@@ -1,0 +1,471 @@
+{% extends 'base.html' %}
+{% block title %}{{ anime.title }} — SakuraStream{% endblock %}
+{% block og_title %}{{ anime.title }}{% endblock %}
+{% block og_description %}{{ anime.synopsis|truncatewords:30 }}{% endblock %}
+
+{% block content %}
+
+<!-- Cinematic Banner -->
+<div class="relative" style="height: 480px;">
+    <!-- Banner image with parallax feel -->
+    <div class="absolute inset-0 overflow-hidden">
+        <img
+            src="{{ anime.display_banner }}"
+            alt="{{ anime.title }}"
+            class="w-full h-full object-cover scale-105"
+            id="heroBanner"
+        />
+    </div>
+    <!-- Gradient overlays -->
+    <div class="absolute inset-0 bg-gradient-to-t from-midnight via-midnight/60 to-transparent"></div>
+    <div class="absolute inset-0 bg-gradient-to-r from-midnight/80 via-transparent to-transparent"></div>
+
+    <!-- Bottom fade -->
+    <div class="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-midnight to-transparent"></div>
+</div>
+
+<!-- Main Content -->
+<div class="max-w-[1400px] mx-auto px-4 sm:px-6 -mt-64 relative z-10">
+
+    <div class="flex flex-col lg:flex-row gap-8">
+
+        <!-- Left: Poster + Quick Actions -->
+        <div class="flex-shrink-0 w-full lg:w-56">
+            <div class="sticky top-24">
+                <!-- Poster -->
+                <div class="relative w-full max-w-[200px] mx-auto lg:mx-0">
+                    <img
+                        src="{{ anime.display_poster }}"
+                        alt="{{ anime.title }}"
+                        class="w-full rounded-2xl shadow-2xl ring-2 ring-sakura/20"
+                        style="aspect-ratio: 2/3; object-fit: cover;"
+                    />
+                    {% if anime.score %}
+                    <div class="absolute -top-3 -right-3 bg-gradient-to-br from-sakura to-neon rounded-full w-14 h-14 flex flex-col items-center justify-center shadow-lg">
+                        <span class="text-white font-black text-base leading-none">{{ anime.score_display }}</span>
+                        <span class="text-white/70 text-xs">score</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Watchlist Actions -->
+                {% if user.is_authenticated %}
+                <div class="mt-4 space-y-2" x-data="watchlistWidget('{{ anime.slug }}', '{{ user_watchlist_entry.status|default:"" }}')">
+                    <div class="relative">
+                        <button @click="open = !open" class="btn-sakura w-full text-sm py-2.5 flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                            <span x-text="currentStatus ? currentStatus.replace(/_/g, ' ') : 'Add to Watchlist'"></span>
+                        </button>
+                        <div x-show="open" @click.outside="open=false" class="absolute top-full left-0 right-0 mt-1 glass-card rounded-xl overflow-hidden z-30 shadow-xl">
+                            {% for status_code, status_label in watchlist_statuses %}
+                            <button @click="setStatus('{{ status_code }}')" class="w-full text-left px-4 py-2.5 text-sm text-white/70 hover:bg-sakura/10 hover:text-sakura transition-colors flex items-center gap-2">
+                                <span>{{ status_label }}</span>
+                            </button>
+                            {% endfor %}
+                            <button @click="setStatus('{{ user_watchlist_entry.status|default:"plan_to_watch" }}')" class="w-full text-left px-4 py-2.5 text-sm hover:bg-white/5 transition-colors">
+                                <span class="text-white/60">Watching</span>
+                            </button>
+                            <button @click="setStatus('completed')" class="w-full text-left px-4 py-2.5 text-sm hover:bg-white/5 transition-colors">
+                                <span class="text-white/60">Completed</span>
+                            </button>
+                            <button @click="setStatus('plan_to_watch')" class="w-full text-left px-4 py-2.5 text-sm hover:bg-white/5 transition-colors">
+                                <span class="text-white/60">Plan to Watch</span>
+                            </button>
+                            <button @click="setStatus('on_hold')" class="w-full text-left px-4 py-2.5 text-sm hover:bg-white/5 transition-colors">
+                                <span class="text-white/60">On Hold</span>
+                            </button>
+                            <button @click="setStatus('dropped')" class="w-full text-left px-4 py-2.5 text-sm hover:bg-white/5 transition-colors">
+                                <span class="text-red-400/70">Dropped</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <a href="/users/login/?next={{ request.path }}" class="btn-sakura w-full text-sm py-2.5 flex items-center justify-center gap-2 mt-4">
+                    Add to Watchlist
+                </a>
+                {% endif %}
+
+                <!-- Trailer button -->
+                {% if anime.trailer_embed_id %}
+                <button onclick="document.getElementById('trailerModal').classList.remove('hidden')"
+                    class="btn-ghost w-full text-sm py-2.5 flex items-center justify-center gap-2 mt-2">
+                    <svg class="w-4 h-4 text-red-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"/></svg>
+                    Watch Trailer
+                </button>
+                {% endif %}
+
+                <!-- Quick Stats -->
+                <div class="glass-card rounded-xl p-4 mt-4 space-y-3">
+                    {% if anime.rank %}
+                    <div class="flex justify-between items-center">
+                        <span class="text-white/50 text-xs">Rank</span>
+                        <span class="gradient-text font-bold text-sm">#{{ anime.rank }}</span>
+                    </div>
+                    {% endif %}
+                    {% if anime.popularity %}
+                    <div class="flex justify-between items-center">
+                        <span class="text-white/50 text-xs">Popularity</span>
+                        <span class="text-white text-sm font-medium">#{{ anime.popularity }}</span>
+                    </div>
+                    {% endif %}
+                    {% if anime.members %}
+                    <div class="flex justify-between items-center">
+                        <span class="text-white/50 text-xs">Members</span>
+                        <span class="text-white text-sm font-medium">{{ anime.members|floatformat:0 }}</span>
+                    </div>
+                    {% endif %}
+                    {% if anime.favorites %}
+                    <div class="flex justify-between items-center">
+                        <span class="text-white/50 text-xs">Favorites</span>
+                        <span class="text-white text-sm font-medium">{{ anime.favorites|floatformat:0 }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Main Info -->
+        <div class="flex-1 min-w-0">
+
+            <!-- Title & Meta -->
+            <div class="mb-6">
+                {% if anime.title_japanese %}
+                <p class="text-white/40 text-sm font-jp mb-1">{{ anime.title_japanese }}</p>
+                {% endif %}
+                <h1 class="text-3xl sm:text-4xl font-black text-white mb-2 leading-tight">{{ anime.title }}</h1>
+                {% if anime.title_english and anime.title_english != anime.title %}
+                <p class="text-white/50 text-lg mb-3">{{ anime.title_english }}</p>
+                {% endif %}
+
+                <!-- Tags Row -->
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <span class="px-3 py-1 rounded-full text-sm font-medium {% if anime.status == 'airing' %}status-airing{% elif anime.status == 'upcoming' %}status-upcoming{% else %}status-finished{% endif %}">
+                        {% if anime.status == 'airing' %}● {% endif %}{{ anime.get_status_display }}
+                    </span>
+                    <span class="glass-card rounded-full px-3 py-1 text-sm text-white/60">{{ anime.get_anime_type_display }}</span>
+                    {% if anime.episodes %}
+                    <span class="glass-card rounded-full px-3 py-1 text-sm text-white/60">{{ anime.episodes }} Episodes</span>
+                    {% endif %}
+                    {% if anime.season and anime.season_year %}
+                    <span class="glass-card rounded-full px-3 py-1 text-sm text-white/60">{{ anime.season|capfirst }} {{ anime.season_year }}</span>
+                    {% endif %}
+                    {% if anime.rating %}
+                    <span class="glass-card rounded-full px-3 py-1 text-sm text-white/60">{{ anime.rating }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Genres -->
+                <div class="flex flex-wrap gap-2">
+                    {% for genre in anime.genres.all %}
+                    <a href="/genre/{{ genre.slug }}/" class="genre-pill">{{ genre.name }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Score Row -->
+            {% if anime.score %}
+            <div class="glass-card rounded-2xl p-5 mb-6">
+                <div class="flex items-center gap-8 flex-wrap">
+                    <div class="text-center">
+                        <div class="gradient-text font-black text-5xl">{{ anime.score_display }}</div>
+                        <div class="text-white/40 text-xs mt-1">Score</div>
+                        {% if anime.scored_by %}<div class="text-white/30 text-xs">by {{ anime.scored_by|floatformat:0 }} users</div>{% endif %}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between text-xs text-white/40 mb-1">
+                            <span>Community Rating</span>
+                            <span>{{ anime.score_display }}/10</span>
+                        </div>
+                        <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+                            <div class="progress-bar h-full rounded-full" style="width: {{ anime.score|floatformat:0 }}0%"></div>
+                        </div>
+                        {% if review_count %}
+                        <p class="text-white/30 text-xs mt-1">Based on {{ review_count }} community reviews</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Synopsis -->
+            <div class="mb-8">
+                <h2 class="text-lg font-bold text-white mb-3">Synopsis</h2>
+                <div class="text-white/70 leading-relaxed text-sm" x-data="{ expanded: false }">
+                    <p x-show="!expanded" class="line-clamp-5">{{ anime.synopsis }}</p>
+                    <p x-show="expanded">{{ anime.synopsis }}</p>
+                    {% if anime.synopsis|length > 300 %}
+                    <button @click="expanded = !expanded" class="text-sakura text-sm mt-2 hover:underline">
+                        <span x-text="expanded ? 'Show less' : 'Read more'"></span>
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Info Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
+                {% if anime.studios.all %}
+                <div class="glass-card rounded-xl p-3">
+                    <p class="text-white/40 text-xs mb-1">Studio</p>
+                    {% for studio in anime.studios.all|slice:":2" %}
+                    <p class="text-white text-sm font-medium">{{ studio.name }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% if anime.aired_from %}
+                <div class="glass-card rounded-xl p-3">
+                    <p class="text-white/40 text-xs mb-1">Aired</p>
+                    <p class="text-white text-sm font-medium">{{ anime.aired_from|date:"M d, Y" }}</p>
+                    {% if anime.aired_to %}<p class="text-white/50 text-xs">to {{ anime.aired_to|date:"M d, Y" }}</p>{% endif %}
+                </div>
+                {% endif %}
+                {% if anime.duration %}
+                <div class="glass-card rounded-xl p-3">
+                    <p class="text-white/40 text-xs mb-1">Duration</p>
+                    <p class="text-white text-sm font-medium">{{ anime.duration }}</p>
+                </div>
+                {% endif %}
+                {% if anime.source %}
+                <div class="glass-card rounded-xl p-3">
+                    <p class="text-white/40 text-xs mb-1">Source</p>
+                    <p class="text-white text-sm font-medium">{{ anime.get_source_display }}</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Characters -->
+            {% if characters %}
+            <div class="mb-8">
+                <h2 class="text-lg font-bold text-white mb-4">Characters</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                    {% for ac in characters %}
+                    <a href="{{ ac.character.get_absolute_url }}" class="glass-card glass-card-hover rounded-xl overflow-hidden text-center group">
+                        <div class="aspect-square overflow-hidden">
+                            <img src="{{ ac.character.display_image }}" alt="{{ ac.character.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                        </div>
+                        <div class="p-2">
+                            <p class="text-xs font-medium text-white line-clamp-1">{{ ac.character.name }}</p>
+                            <p class="text-xs text-white/40">{{ ac.get_role_display }}</p>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Relations -->
+            {% if relations %}
+            <div class="mb-8">
+                <h2 class="text-lg font-bold text-white mb-4">Related Anime</h2>
+                <div class="space-y-2">
+                    {% for rel in relations %}
+                    <a href="{{ rel.to_anime.get_absolute_url }}" class="glass-card glass-card-hover rounded-xl p-3 flex items-center gap-3">
+                        <img src="{{ rel.to_anime.display_poster }}" alt="{{ rel.to_anime.title }}" class="w-10 h-14 object-cover rounded-lg" />
+                        <div>
+                            <p class="text-white text-sm font-medium">{{ rel.to_anime.title }}</p>
+                            <p class="text-white/40 text-xs capitalize">
+                                {{ rel.relation_type }}
+                            </p>
+                        </div>
+                        {% if rel.to_anime.score %}<span class="score-badge ml-auto">{{ rel.to_anime.score_display }}</span>{% endif %}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Reviews -->
+            <div class="mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-bold text-white">Reviews {% if review_count %}<span class="text-white/40 text-base font-normal">({{ review_count }})</span>{% endif %}</h2>
+                    {% if user.is_authenticated and not user_review %}
+                    <button onclick="document.getElementById('reviewForm').classList.toggle('hidden')" class="btn-sakura text-xs py-2 px-4">
+                        Write Review
+                    </button>
+                    {% endif %}
+                </div>
+
+                <!-- Review Form -->
+                {% if user.is_authenticated and not user_review %}
+                <div id="reviewForm" class="hidden glass-card rounded-xl p-5 mb-4" x-data="reviewFormWidget('{{ anime.slug }}')">
+                    <h3 class="font-semibold text-white mb-4">Your Review</h3>
+                    <div class="space-y-3">
+                        <input type="text" x-model="title" placeholder="Review title..." class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm placeholder-white/30 focus:outline-none focus:border-sakura" />
+                        <textarea x-model="content" rows="4" placeholder="Share your thoughts..." class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white text-sm placeholder-white/30 focus:outline-none focus:border-sakura resize-none"></textarea>
+                        <div class="flex items-center gap-4">
+                            <div>
+                                <label class="text-white/50 text-xs mb-1 block">Score</label>
+                                <select x-model="score" class="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-sakura">
+                                    <option value="10">10/10</option>
+                                    <option value="9">9/10</option>
+                                    <option value="8">8/10</option>
+                                    <option value="7">7/10</option>
+                                    <option value="6">6/10</option>
+                                    <option value="5">5/10</option>
+                                    <option value="4">4/10</option>
+                                    <option value="3">3/10</option>
+                                    <option value="2">2/10</option>
+                                    <option value="1">1/10</option>
+                                </select>
+                            </div>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" x-model="is_recommended" class="accent-sakura" />
+                                <span class="text-white/60 text-sm">Recommended</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" x-model="is_spoiler" class="accent-sakura" />
+                                <span class="text-white/60 text-sm">Contains Spoilers</span>
+                            </label>
+                        </div>
+                        <button @click="submitReview()" class="btn-sakura text-sm py-2 px-6">Submit Review</button>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Review List -->
+                <div class="space-y-4">
+                    {% for review in reviews %}
+                    <div class="glass-card rounded-xl p-5">
+                        <div class="flex items-start justify-between gap-3 mb-3">
+                            <div class="flex items-center gap-3">
+                                <img src="{{ review.user.display_avatar }}" class="w-10 h-10 rounded-full object-cover ring-1 ring-sakura/20" alt="" />
+                                <div>
+                                    <p class="font-medium text-white text-sm">{{ review.user.username }}</p>
+                                    <p class="text-white/40 text-xs">{{ review.created_at|date:"M d, Y" }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                {% if review.is_spoiler %}<span class="text-yellow-500/70 text-xs glass-card px-2 py-0.5 rounded">⚠ Spoiler</span>{% endif %}
+                                <span class="score-badge">{{ review.score }}/10</span>
+                            </div>
+                        </div>
+                        {% if review.is_spoiler %}
+                        <div x-data="{ show: false }">
+                            <button @click="show = true" x-show="!show" class="text-yellow-500 text-sm hover:underline">Click to reveal (contains spoilers)</button>
+                            <div x-show="show">
+                                <h4 class="font-semibold text-white mb-2">{{ review.title }}</h4>
+                                <p class="text-white/60 text-sm leading-relaxed">{{ review.content }}</p>
+                            </div>
+                        </div>
+                        {% else %}
+                        <h4 class="font-semibold text-white mb-2">{{ review.title }}</h4>
+                        <p class="text-white/60 text-sm leading-relaxed">{{ review.content }}</p>
+                        {% endif %}
+                        <div class="flex items-center gap-3 mt-3 pt-3 border-t border-white/5">
+                            {% if review.is_recommended %}<span class="text-green-400 text-xs">✓ Recommended</span>{% endif %}
+                            {% if user.is_authenticated %}
+                            <button
+                                hx-post="/community/review/{{ review.id }}/like/"
+                                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                                class="ml-auto flex items-center gap-1 text-white/40 hover:text-sakura transition-colors text-xs"
+                            >
+                                ❤ {{ review.like_count }}
+                            </button>
+                            {% else %}
+                            <span class="ml-auto text-white/30 text-xs">❤ {{ review.like_count }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="glass-card rounded-xl p-8 text-center">
+                        <p class="text-5xl mb-3">💬</p>
+                        <p class="text-white/50">No reviews yet. Be the first to review!</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Similar Anime -->
+    {% if similar %}
+    <section class="mt-12">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="section-title text-white">🎯 Similar Anime</h2>
+        </div>
+        <div class="scroll-row flex gap-4 py-2">
+            {% for anime in similar %}
+            {% include 'partials/anime_card.html' %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+</div>
+
+<!-- Trailer Modal -->
+{% if anime.trailer_embed_id %}
+<div id="trailerModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" onclick="this.classList.add('hidden')">
+    <div class="absolute inset-0 bg-black/90 backdrop-blur-sm"></div>
+    <div class="relative w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl" onclick="event.stopPropagation()">
+        <div style="padding-bottom: 56.25%; position: relative;">
+            <iframe
+                src="https://www.youtube.com/embed/{{ anime.trailer_embed_id }}?autoplay=1"
+                class="absolute inset-0 w-full h-full"
+                frameborder="0"
+                allow="autoplay; encrypted-media"
+                allowfullscreen
+            ></iframe>
+        </div>
+    </div>
+    <button class="absolute top-4 right-4 text-white/60 hover:text-white text-2xl z-10" onclick="document.getElementById('trailerModal').classList.add('hidden')">✕</button>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Parallax banner
+window.addEventListener('scroll', () => {
+    const banner = document.getElementById('heroBanner');
+    if (banner) {
+        banner.style.transform = `scale(1.05) translateY(${window.scrollY * 0.2}px)`;
+    }
+});
+
+function watchlistWidget(slug, currentStatus) {
+    return {
+        open: false,
+        currentStatus: currentStatus || null,
+        setStatus(status) {
+            this.open = false;
+            fetch(`/watchlist/toggle/${slug}/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                body: JSON.stringify({ status })
+            }).then(r => r.json()).then(d => {
+                if (d.action === 'removed') { this.currentStatus = null; }
+                else { this.currentStatus = status; }
+            });
+        }
+    }
+}
+
+function reviewFormWidget(slug) {
+    return {
+        title: '',
+        content: '',
+        score: 8,
+        is_recommended: true,
+        is_spoiler: false,
+        submitReview() {
+            fetch(`/community/review/${slug}/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                body: JSON.stringify({
+                    title: this.title,
+                    content: this.content,
+                    score: parseInt(this.score),
+                    is_recommended: this.is_recommended,
+                    is_spoiler: this.is_spoiler,
+                })
+            }).then(r => r.json()).then(d => {
+                if (d.success) { location.reload(); }
+            });
+        }
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}{{ character.name }} — SakuraStream{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <div class="glass-card rounded-2xl overflow-hidden">
+    <div class="h-48 bg-gradient-to-br from-sakura/20 to-neon/20"></div>
+    <div class="px-6 pb-6 -mt-20">
+      <div class="flex gap-5 flex-wrap">
+        <img src="{{ character.display_image }}" alt="{{ character.name }}" class="w-36 h-48 object-cover rounded-2xl ring-4 ring-midnight shadow-2xl" />
+        <div class="pt-20">
+          <h1 class="text-3xl font-black text-white">{{ character.name }}</h1>
+          {% if character.name_kanji %}<p class="text-white/50 text-lg font-jp mt-0.5">{{ character.name_kanji }}</p>{% endif %}
+          <div class="flex gap-3 mt-3"><span class="genre-pill">♥ {{ character.favorites }} favorites</span></div>
+        </div>
+      </div>
+      {% if character.about %}
+      <div class="mt-6">
+        <h2 class="text-lg font-bold text-white mb-3">About</h2>
+        <p class="text-white/60 text-sm leading-relaxed">{{ character.about|truncatewords:100 }}</p>
+      </div>
+      {% endif %}
+      {% if appearances %}
+      <div class="mt-6">
+        <h2 class="text-lg font-bold text-white mb-4">Anime Appearances</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+          {% for ac in appearances %}
+          <a href="{{ ac.anime.get_absolute_url }}" class="glass-card glass-card-hover rounded-xl overflow-hidden flex items-center gap-3 p-2">
+            <img src="{{ ac.anime.display_poster }}" class="w-10 h-14 object-cover rounded-lg" alt="" />
+            <div class="min-w-0"><p class="text-xs font-medium text-white line-clamp-2">{{ ac.anime.title }}</p><p class="text-xs text-white/40">{{ ac.get_role_display }}</p></div>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

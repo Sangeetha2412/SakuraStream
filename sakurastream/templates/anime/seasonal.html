@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}{{ season|capfirst }} {{ year }} Anime — SakuraStream{% endblock %}
+{% block content %}
+<div class="max-w-[1400px] mx-auto px-4 py-8">
+  <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
+    <div>
+      <h1 class="text-3xl font-black text-white">🌸 {{ season|capfirst }} {{ year }}</h1>
+      <p class="text-white/50 mt-1">Seasonal anime lineup</p>
+    </div>
+    <div class="flex gap-2 flex-wrap">
+     <a href="?season=winter&year={{ year }}" class="px-4 py-2 rounded-full text-sm {% if season == 'winter' %}btn-sakura{% else %}btn-ghost{% endif %}">Winter</a>
+
+     <a href="?season=spring&year={{ year }}" class="px-4 py-2 rounded-full text-sm {% if season == 'spring' %}btn-sakura{% else %}btn-ghost{% endif %}">Spring</a>
+
+     <a href="?season=summer&year={{ year }}" class="px-4 py-2 rounded-full text-sm {% if season == 'summer' %}btn-sakura{% else %}btn-ghost{% endif %}">Summer</a>
+
+     <a href="?season=fall&year={{ year }}" class="px-4 py-2 rounded-full text-sm {% if season == 'fall' %}btn-sakura{% else %}btn-ghost{% endif %}">Fall</a>
+    </div>
+  </div>
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-4">
+    {% for item in anime %}
+    <a href="{{ item.get_absolute_url }}" class="anime-card group" style="height:260px">
+      <div class="relative w-full h-full rounded-xl overflow-hidden">
+        <img src="{{ item.display_poster }}" alt="{{ item.title }}" class="w-full h-full object-cover" loading="lazy"/>
+        <div class="card-overlay"></div>
+        {% if item.score %}<div class="absolute top-2 right-2 z-20"><span class="score-badge">⭐ {{ item.score_display }}</span></div>{% endif %}
+        <div class="absolute bottom-0 left-0 right-0 z-20 p-3">
+          <p class="text-white font-semibold text-xs line-clamp-2">{{ item.title_english|default:item.title }}</p>
+          <div class="flex flex-wrap gap-1 mt-1">{% for g in item.genres.all|slice:":2" %}<span class="text-white/50 text-xs">{{ g.name }}</span>{% endfor %}</div>
+        </div>
+      </div>
+    </a>
+    {% empty %}
+    <div class="col-span-full glass-card rounded-2xl p-12 text-center"><p class="text-5xl mb-3">🌸</p><p class="text-white/50">No seasonal anime found. Data fetches automatically.</p></div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

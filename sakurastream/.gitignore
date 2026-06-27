@@ -1,0 +1,71 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.env
+*.sqlite3
+media/
+staticfiles/
+.DS_Store
+node_modules/
+*.log
+celerybeat-schedule
+celerybeat.pid
+.venv/
+venv/
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Virtual Environment
+.venv/
+venv/
+env/
+
+# Environment
+.env
+.env.*
+
+# Database
+*.sqlite3
+
+# Django
+media/
+staticfiles/
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+
+# Logs
+*.log
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Python cache
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.vscode/
+.idea/
+Thumbs.db
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
