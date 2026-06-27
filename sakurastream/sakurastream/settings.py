@@ -65,9 +65,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'sakurastream.wsgi.application'
 
+
 DATABASES = {
     "default": dj_database_url.config(
-        default=config("DATABASE_URL")
+        default="postgresql://sakura:sakura123@db:5432/sakurastream"
     )
 }
 
