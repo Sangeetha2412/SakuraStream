@@ -15,6 +15,7 @@ def home(request):
     trending = Anime.objects.filter(
     score__isnull=False
 ).order_by("-members")[:12]
+
     top_rated = Anime.objects.filter(score__isnull=False).order_by('-score')[:12]
     popular = Anime.objects.order_by("-members")[:12]
     latest = Anime.objects.order_by('-updated_at')[:12]
@@ -24,6 +25,12 @@ def home(request):
     collections = Collection.objects.all()[:4]
     top_genres = Genre.objects.all()[:10]
     recent_reviews = Review.objects.select_related('user', 'anime').order_by('-created_at')[:6]
+
+    print("="*60)
+    print("HOME VIEW CALLED")
+    print("TRENDING =", trending.count())
+    print("UPCOMING =", upcoming.count())
+    print("="*60)
 
     # Seasonal
     from datetime import date
@@ -39,14 +46,16 @@ def home(request):
         current_season = 'winter'
 
     seasonal = Anime.objects.filter(season=current_season, season_year=today.year).order_by('-score')[:12]
-
+    
+    print("SEASONAL =", seasonal.count())
+    print("="*60)
     print("=" * 50)
     print("HOME PAGE DATA")
     print("TRENDING =", trending.count())
     print("UPCOMING =", upcoming.count())
     print("SEASONAL =", seasonal.count())
     print("=" * 50)
-    
+
     context = {
         'trending': trending,
         'top_rated': top_rated,
