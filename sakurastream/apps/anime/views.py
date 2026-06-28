@@ -15,8 +15,8 @@ def home(request):
     trending = Anime.objects.order_by('-members')[:12]
     top_rated = Anime.objects.filter(score__isnull=False).order_by('-score')[:12]
     popular = Anime.objects.filter(popularity__isnull=False).order_by('-members')[:12]
-    latest = Anime.objects.order_by('-updated_at')[:12].order_by('-updated_at')[:12]
-    upcoming = Anime.objects.filter(status__icontains="yet").order_by('aired_from')[:8]
+    latest = Anime.objects.order_by('-updated_at')[:12]
+    upcoming = Anime.objects.filter(status="upcoming").order_by("aired_from")[:8]
     featured = Anime.objects.order_by('-score').first()
     editor_picks = Anime.objects.order_by('-favorites')[:6]
     collections = Collection.objects.all()[:4]
