@@ -1,7 +1,19 @@
 import dj_database_url
 import os
 from pathlib import Path
-from decouple import config
+
+try:
+    from decouple import config
+except ImportError:  # pragma: no cover - fallback for environments without python-decouple
+    def config(name, default=None, cast=None):
+        value = os.getenv(name)
+        if value is None:
+            return default
+        if cast is bool:
+            return str(value).strip().lower() in {"1", "true", "yes", "on"}
+        if cast is int:
+            return int(value)
+        return value
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -9,7 +21,15 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-sakurastream-change-i
 
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in config("ALLOWED_HOSTS", default="localhost,127.0.0.1").split(",")
+    if host.strip()
+]
+
+render_host = os.getenv("RENDER_EXTERNAL_HOSTNAME")
+if render_host:
+    ALLOWED_HOSTS.extend([render_host, f"www.{render_host}"])
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -160,15 +180,17 @@ CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='http://localhost:
 CORS_ALLOW_CREDENTIALS = True
 
 # CSRF - allow requests coming through Nginx on port 8080
-CSRF_TRUSTED_ORIGINS = config(
-    "CSRF_TRUSTED_ORIGINS",
-    default="https://sakurastream.onrender.com"
-).split(",")
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8080",
+    "http://127.0.0.1:8080",
+    "https://sakurastream.onrender.com",
+]
 
 # Security
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 CSRF_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_SECURE = not DEBUG
 
