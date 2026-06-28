@@ -20,6 +20,8 @@ def home(request):
     popular = Anime.objects.order_by("-members")[:12]
     latest = Anime.objects.order_by('-updated_at')[:12]
     upcoming = Anime.objects.filter(status="upcoming").order_by("aired_from")[:8]
+    print("ALL STATUS VALUES")
+    print(list(Anime.objects.values_list("status", flat=True).distinct()))
     featured = Anime.objects.order_by("-score").first()
     editor_picks = Anime.objects.order_by('-favorites')[:6]
     collections = Collection.objects.all()[:4]
@@ -46,7 +48,7 @@ def home(request):
         current_season = 'winter'
 
     seasonal = Anime.objects.filter(season=current_season, season_year=today.year).order_by('-score')[:12]
-    
+
     print("SEASONAL =", seasonal.count())
     print("="*60)
     print("=" * 50)
