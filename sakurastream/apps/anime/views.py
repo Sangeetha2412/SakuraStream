@@ -40,6 +40,13 @@ def home(request):
 
     seasonal = Anime.objects.filter(season=current_season, season_year=today.year).order_by('-score')[:12]
 
+    print("=" * 50)
+    print("HOME PAGE DATA")
+    print("TRENDING =", trending.count())
+    print("UPCOMING =", upcoming.count())
+    print("SEASONAL =", seasonal.count())
+    print("=" * 50)
+    
     context = {
         'trending': trending,
         'top_rated': top_rated,
