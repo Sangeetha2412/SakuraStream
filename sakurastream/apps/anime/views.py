@@ -12,12 +12,14 @@ import json
 
 
 def home(request):
-    trending = Anime.objects.order_by('-members')[:12]
+    trending = Anime.objects.filter(
+    score__isnull=False
+).order_by("-members")[:12]
     top_rated = Anime.objects.filter(score__isnull=False).order_by('-score')[:12]
-    popular = Anime.objects.filter(popularity__isnull=False).order_by('-members')[:12]
+    popular = Anime.objects.order_by("-members")[:12]
     latest = Anime.objects.order_by('-updated_at')[:12]
     upcoming = Anime.objects.filter(status="upcoming").order_by("aired_from")[:8]
-    featured = Anime.objects.order_by('-score').first()
+    featured = Anime.objects.order_by("-score").first()
     editor_picks = Anime.objects.order_by('-favorites')[:6]
     collections = Collection.objects.all()[:4]
     top_genres = Genre.objects.all()[:10]
@@ -181,7 +183,7 @@ def seasonal(request):
 
 
 def upcoming(request):
-    anime = Anime.objects.filter(status='upcoming').order_by('aired_from')
+    upcoming = Anime.objects.none()
     paginator = Paginator(anime, 24)
     page_obj = paginator.get_page(request.GET.get('page', 1))
     return render(request, 'anime/upcoming.html', {'anime': page_obj})
