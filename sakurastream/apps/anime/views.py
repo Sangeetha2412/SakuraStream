@@ -61,6 +61,8 @@ def home(request):
 
 def anime_list(request):
     queryset = Anime.objects.all()
+    print("TOTAL ANIME =", Anime.objects.count())
+    print("QUERYSET =", queryset.count())
 
     # Filters
     genre = request.GET.get('genre')
@@ -183,10 +185,16 @@ def seasonal(request):
 
 
 def upcoming(request):
-    upcoming = Anime.objects.none()
+    anime = Anime.objects.filter(status="upcoming").order_by("aired_from")
+
     paginator = Paginator(anime, 24)
-    page_obj = paginator.get_page(request.GET.get('page', 1))
-    return render(request, 'anime/upcoming.html', {'anime': page_obj})
+    page_obj = paginator.get_page(request.GET.get("page", 1))
+
+    return render(
+        request,
+        "anime/upcoming.html",
+        {"anime": page_obj},
+    )
 
 
 def search_suggestions(request):

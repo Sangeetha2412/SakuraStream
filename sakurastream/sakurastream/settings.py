@@ -162,7 +162,7 @@ CORS_ALLOW_CREDENTIALS = True
 # CSRF - allow requests coming through Nginx on port 8080
 CSRF_TRUSTED_ORIGINS = config(
     "CSRF_TRUSTED_ORIGINS",
-    default="http://localhost:8080,http://127.0.0.1:8080"
+    default="https://sakurastream.onrender.com"
 ).split(",")
 
 # Security
