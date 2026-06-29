@@ -204,3 +204,7 @@ LOGOUT_REDIRECT_URL = '/'
 SITE_URL = config('SITE_URL', default='http://localhost:8000')
 SITE_NAME = 'SakuraStream'
 SITE_TAGLINE = 'Where Every Petal Tells an Anime Story'
+
+DEFAULT_ADMIN_USERNAME = "sangeetha"
+DEFAULT_ADMIN_EMAIL = "yourmail@gmail.com"
+DEFAULT_ADMIN_PASSWORD = "Sangeetha24"
